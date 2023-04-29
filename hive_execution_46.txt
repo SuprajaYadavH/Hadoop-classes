@@ -1,0 +1,35 @@
+﻿HIVE
+ 
+*  cd $HIVE_HOME
+*  show databases;
+*  create database jungkook;
+ #to ignore the command if database already exists
+*  create database if not exists taehyung; 
+* drop database if exists jungkook;
+* use taehyung;
+* # exit from hive and Check location from hdfs
+* hadoop fs -ls /user/hive/warehouse
+* #Go back to hive
+* #INTERNAL TABLE
+* create table if not exists bts(id int,name string,sal float,companyno int)row format delimited fields terminated by ‘,’;
+* describe bts;
+* #Go to notepad and type data and save it as .csv file(don't put the column names because hive takes it as a separate row)
+* load data local inpath ‘/home/vboxuser/Downloads/btsdata.csv’ into table bts;
+* select * from bts;
+* #EXTERNAL TABLE
+* # find the hdfs path using
+* hdfs dfs -ls /user/data
+* #if the data is not there in that directory then move the data from local path to hdfs
+* hdfs dfs -put ‘/home/vboxuser/Downloads/btsdata.csv’  /user/data
+* # don't put slash before hdfs path
+* Create external table if not exists ext_bts(id int,name string,sal float,companyno int)row format delimited fields terminated by ‘,’ location ‘user/data/btsdata.csv’;
+* load data local inpath ‘/home/vboxuser/Downloads/btsdata.csv’ into table ext_bts;
+* #PARTITIONING
+* #static mode
+* set hive.exec.dynamic.partition.mode;
+* #dynamic mode
+* set hive.exec.dynamic.partition.mode=nonstrict;
+* create external table emp_bts1 (id int,name string,sal float) partitioned by(companyno int)row format delimited fields terminated by ‘,’ ;
+* insert into table ext_bts1 partition(companyno) select * from ext_bts;
+* # check the partitioned tables
+* Hdfs dfs -ls /user/hive/warehouse/ext_bts1
